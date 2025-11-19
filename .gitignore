@@ -11,6 +11,7 @@
 *.tar.gz
 *.rar
 hs_err_pid*
+replay_pid*
 
 # Maven
 target/
@@ -63,4 +64,3 @@ bin/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
