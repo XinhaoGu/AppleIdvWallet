@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: apple-idv-wallet
+
+server:
+  port: 8080
+
+idv:
+  relying-party-id: apple-idv-wallet.local
+  apple:
+    mediator: https://identity.apple.com/digital-credentials
+

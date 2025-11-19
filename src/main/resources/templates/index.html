@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Apple IDV Wallet Demo</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:attr="data-prefilled-session=${prefilledSessionId}">
+<header>
+    <h1>Apple Wallet identity verification</h1>
+    <p>Request a mobile driver license (mdoc) from Apple Wallet using the W3C Digital Credentials API.</p>
+</header>
+
+<main>
+    <section class="hero">
+        <p>
+            Use Safari on an iPhone to pass the credential request directly to Apple Wallet.
+            Everyone else will get a QR code to continue the flow on an iPhone.
+        </p>
+        <button id="checkWalletButton" class="cta">Check Apple IDV</button>
+        <div id="statusMessage" role="status" aria-live="polite"></div>
+    </section>
+    <section>
+        <h2>How it works</h2>
+        <ol>
+            <li>The site creates a short-lived verification session and challenge.</li>
+            <li>Safari calls the Digital Credentials API to open Apple Wallet and ask for a government ID.</li>
+            <li>Once Wallet returns, the page reports success (<code>true</code>) if a valid ID was shared, false otherwise.</li>
+        </ol>
+    </section>
+</main>
+
+<dialog id="qrDialog">
+    <form method="dialog">
+        <h3>Continue on your iPhone</h3>
+        <p>Scan this QR code with your iPhone camera to reopen this flow in Safari.</p>
+        <img id="qrImage" alt="QR code to open the Apple IDV session">
+        <p class="hint">After Safari opens, tap <strong>Check Apple IDV</strong> to launch Apple Wallet.</p>
+        <button value="cancel">Close</button>
+    </form>
+</dialog>
+
+<script th:inline="javascript">
+    window.APP_CONFIG = {
+        prefilledSessionId: /*[[${prefilledSessionId}]]*/ null
+    };
+</script>
+<script src="/js/idv.js" defer></script>
+</body>
+</html>
+

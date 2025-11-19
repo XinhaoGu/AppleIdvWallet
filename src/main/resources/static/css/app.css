@@ -1,0 +1,90 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0 1.5rem 3rem;
+    background: #f4f6fb;
+    color: #111;
+}
+
+header {
+    padding: 2rem 0 1rem;
+}
+
+h1 {
+    margin-bottom: .5rem;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 25px 60px rgba(6, 14, 42, 0.08);
+}
+
+.hero {
+    text-align: center;
+}
+
+.cta {
+    cursor: pointer;
+    margin-top: 1.5rem;
+    padding: 0.95rem 2.75rem;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #0070f3, #00a8ff);
+    color: #fff;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.cta:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.cta:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 96, 255, 0.3);
+}
+
+#statusMessage {
+    min-height: 1.5rem;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+#statusMessage.error {
+    color: #c62828;
+}
+
+dialog {
+    border: none;
+    border-radius: 18px;
+    padding: 1.5rem;
+    max-width: 420px;
+}
+
+dialog::backdrop {
+    background: rgba(6, 14, 42, 0.35);
+}
+
+#qrImage {
+    width: 100%;
+    max-width: 280px;
+    display: block;
+    margin: 1rem auto;
+}
+
+.hint {
+    font-size: 0.9rem;
+    color: #444;
+}
+
