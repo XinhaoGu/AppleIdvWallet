@@ -27,6 +27,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/idv")
 public class IdentityVerificationController {
@@ -79,12 +81,13 @@ public class IdentityVerificationController {
                 .body(png);
     }
 
+    @SuppressWarnings("null")
     private String resolveBaseUrl(HttpServletRequest request) {
         String base = UriComponentsBuilder.newInstance()
                 .scheme(request.getScheme())
                 .host(request.getServerName())
                 .port(request.getServerPort())
-                .path(request.getContextPath())
+                .path(Objects.toString(request.getContextPath(), ""))
                 .build()
                 .toUriString();
         return base.endsWith("/") ? base : base + "/";
