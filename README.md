@@ -19,6 +19,47 @@ mvn spring-boot:run
 
 Browse to <http://localhost:8080>.
 
+## Deployment
+
+### Prerequisites
+- Docker installed (recommended) or Java 25 SDK
+- A public domain name (e.g., `idv.example.com`)
+- **HTTPS Certificate** (Mandatory: The API does not work on insecure HTTP except localhost)
+
+### Docker (Recommended)
+
+1. **Build the image:**
+   ```bash
+   docker build -t apple-idv-wallet .
+   ```
+
+2. **Run the container:**
+   Replace `your-domain.com` with your actual public domain (excluding protocol).
+   ```bash
+   docker run -p 8080:8080 \
+     -e SPRING_PROFILES_ACTIVE=prod \
+     -e IDV_DOMAIN=your-domain.com \
+     apple-idv-wallet
+   ```
+
+3. **Expose via HTTPS:**
+   Configure a reverse proxy (Nginx, AWS ALB, Cloudflare) to terminate SSL and forward traffic to port 8080.
+
+### Standard JAR
+
+1. **Build:**
+   ```bash
+   ./mvnw clean package -DskipTests
+   ```
+
+2. **Run:**
+   ```bash
+   export IDV_DOMAIN=your-domain.com
+   java -Dspring.profiles.active=prod -jar target/apple-idv-wallet-0.0.1-SNAPSHOT.jar
+   ```
+
+For more detailed deployment options, see [DEPLOY.md](DEPLOY.md).
+
 ## Testing the wallet flow
 
 1. From an iPhone running iOS 17+ open Safari and navigate to your workstation URL (or scan the QR code shown when you click the button from a desktop browser).
@@ -53,5 +94,3 @@ Override these (for example via environment variables) when deploying behind you
 - This demo stores sessions in-memory; use a shared persistence layer for multi-instance deployments.
 - The Digital Credentials API is only available in WebKit on iOS 17.4+/macOS 14.4+. Guard feature detection before calling.
 - Always host the site over HTTPS; an unsigned origin cannot talk to Apple Wallet.
-
-

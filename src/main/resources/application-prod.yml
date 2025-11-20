@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: 8080
+  # In production, you often terminate SSL at the load balancer (NGINX, AWS ALB), 
+  # so the app sees HTTP. If you need SSL directly in the app, configure server.ssl.* here.
+
+idv:
+  # OVERRIDE THIS with your actual domain name in production
+  relying-party-id: ${IDV_DOMAIN:example.com}
+  apple:
+    mediator: https://identity.apple.com/digital-credentials
+
