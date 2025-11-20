@@ -1,9 +1,10 @@
 package com.example.appleidv.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record IdentitySessionResponse(
         String sessionId,
         String qrContent,
-        DigitalCredentialRequestPayload request
+        @JsonProperty("payload") DigitalCredentialRequestPayload request
 ) {
 }
-

@@ -1,21 +1,9 @@
 package com.example.appleidv.model;
 
-import java.util.List;
+import java.util.Map;
 
 public record DigitalCredentialRequestPayload(
         String protocol,
-        String docType,
-        String mediator,
-        List<RequestedNamespace> namespaces,
-        String challenge,
-        String relyingPartyId,
-        String sessionToken
+        Map<String, Object> request
 ) {
-
-    public record RequestedNamespace(
-            String namespace,
-            List<String> dataElements
-    ) {
-    }
 }
-

@@ -93,24 +93,13 @@
         }
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 120000);
+        
+        // Use the protocol and request payload from the server
         const provider = {
-            protocol: session.request.protocol,
-            mediator: session.request.mediator,
-            request: {
-                docType: session.request.docType,
-                requestItems: session.request.namespaces.map(ns => ({
-                    namespace: ns.namespace,
-                    dataElements: ns.dataElements
-                })),
-                session: session.request.sessionToken,
-                challenge: session.request.challenge,
-                relyingParty: session.request.relyingPartyId,
-                clientHints: {
-                    purpose: 'identity_verification',
-                    trustFramework: 'iso_18013_5'
-                }
-            }
+            protocol: session.payload.protocol, // "openid4vp"
+            request: session.payload.request    // The OpenID4VP request object
         };
+
         try {
             if (hasNavigatorIdentity) {
                 return await navigator.identity.get({
@@ -124,6 +113,8 @@
                     signal: controller.signal
                 });
             }
+            // If on localhost or HTTPS, but API is missing, this error will throw.
+            // If on HTTP (not localhost), the API is likely missing due to secure context requirements.
             if (!window.isSecureContext) {
                 throw new Error('Digital Credentials API requires HTTPS. Please use a secure connection.');
             }
@@ -137,11 +128,13 @@
         if (!walletResponse) {
             return false;
         }
-        if (Array.isArray(walletResponse.documents) && walletResponse.documents.length > 0) {
+        // Check for VP Token response format (OpenID4VP)
+        if (walletResponse.vp_token || walletResponse.data) {
             return true;
         }
-        if (Array.isArray(walletResponse.items)) {
-            return walletResponse.items.some(item => item.isValid !== false);
+        // Legacy check (just in case)
+        if (Array.isArray(walletResponse.documents) && walletResponse.documents.length > 0) {
+            return true;
         }
         return Boolean(walletResponse.presentedMdoc);
     }
@@ -190,4 +183,3 @@
         statusEl.classList.toggle('error', isError);
     }
 })();
-

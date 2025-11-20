@@ -25,13 +25,10 @@ public class IdentitySessionService {
 
     private final Map<String, IdentitySession> sessions = new ConcurrentHashMap<>();
     private final SecureRandom secureRandom = new SecureRandom();
-    private final String appleMediatorUrl;
     private final String relyingPartyId;
 
     public IdentitySessionService(
-            @Value("${idv.apple.mediator:https://identity.apple.com/digital-credentials}") String appleMediatorUrl,
             @Value("${idv.relying-party-id:localhost}") String relyingPartyId) {
-        this.appleMediatorUrl = appleMediatorUrl;
         this.relyingPartyId = relyingPartyId;
     }
 
@@ -82,20 +79,57 @@ public class IdentitySessionService {
     }
 
     private DigitalCredentialRequestPayload buildRequestPayload(IdentitySession session) {
-        List<DigitalCredentialRequestPayload.RequestedNamespace> namespaces = List.of(
-                new DigitalCredentialRequestPayload.RequestedNamespace(
-                        "org.iso.18013.5.1",
-                        List.of("family_name", "given_name", "birth_date", "document_number")
+        // OpenID4VP parameters
+        // Based on WWDC24/25: "Verify with Wallet on the Web"
+        // The request object inside the provider maps to the OpenID4VP Authorization Request.
+        
+        Map<String, Object> presentationDefinition = Map.of(
+            "id", "mDL-request-demo",
+            "input_descriptors", List.of(
+                Map.of(
+                    "id", "org.iso.18013.5.1.mDL",
+                    "format", Map.of(
+                        "mso_mdoc", Map.of(
+                            "alg", List.of("ES256", "ES384", "ES512")
+                        )
+                    ),
+                    "constraints", Map.of(
+                        "limit_disclosure", "required",
+                        "fields", List.of(
+                            Map.of(
+                                "path", List.of("$['org.iso.18013.5.1']['family_name']"),
+                                "intent_to_retain", false
+                            ),
+                            Map.of(
+                                "path", List.of("$['org.iso.18013.5.1']['given_name']"),
+                                "intent_to_retain", false
+                            ),
+                             Map.of(
+                                "path", List.of("$['org.iso.18013.5.1']['birth_date']"),
+                                "intent_to_retain", false
+                            ),
+                             Map.of(
+                                "path", List.of("$['org.iso.18013.5.1']['document_number']"),
+                                "intent_to_retain", false
+                            )
+                        )
+                    )
                 )
+            )
         );
+
+        Map<String, Object> openId4VpRequest = Map.of(
+            "client_id", relyingPartyId,
+            "client_id_scheme", "web-origin",
+            "response_type", "vp_token",
+            "response_mode", "web_message",
+            "nonce", session.getChallenge(),
+            "presentation_definition", presentationDefinition
+        );
+
         return new DigitalCredentialRequestPayload(
-                "mdoc",
-                "org.iso.18013.5.1.mDL",
-                appleMediatorUrl,
-                namespaces,
-                session.getChallenge(),
-                relyingPartyId,
-                session.getId()
+            "openid4vp",
+            openId4VpRequest
         );
     }
 
@@ -110,4 +144,3 @@ public class IdentitySessionService {
         sessions.values().removeIf(session -> session.getCreatedAt().isBefore(cutoff));
     }
 }
-
